@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+
+<body>
+  <canvas id="draw" width="800" height="800"></canvas>
+  <script>
+    // query the canvas element from the body
+    const canvas = document.querySelector('#draw');
+    // get the context of the canvas
+    const ctx = canvas.getContext('2d')
+    // set the canvas width and height to the size of the window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    // starter color for strokes on the canvas
+    ctx.strokeStyle = '#BADA55';
+    // round off the start and end lines of the strokes
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    // set line width to be big!
+    ctx.lineWidth = 50;
+
+    // boolean if the mouse cursor is active or not
+    let isDrawing = false;
+
+    // beginning and ending coordinates of each stroke on the canvas
+    let lastX = 0;
+    let lastY = 0;
+    // set hue to start at 0 or red on each stroke
+    let hue = 0;
+    // 
+    let direction = true
+
+    // function to activate drawing action on the canvas
+    function draw(e) {
+      if (!isDrawing) return; // stop the function when the user is not moused down
+      console.log(e);
+      ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+      ctx.beginPath();
+      // start from
+      ctx.moveTo(lastX, lastY);
+      // go to
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+      // update beginning and end points of the stroke
+      [lastX, lastY] = [e.offsetX, e.offsetY]
+      // increment hue to go through the color spectrum
+      hue++;
+      // once the hue has gone through the entire sprectrum reset to 0
+      if (hue >= 360) {
+        hue = 0;
+      }
+      // flip the direction flag based on how large the lineWidth is
+      if (ctx.lineWidth >= 50 || ctx.lineWidth <= 1) {
+        direction = !direction
+      }
+      if (direction) {
+        ctx.lineWidth++;
+      } else {
+        ctx.lineWidth--;
+      }
+    }
+
+    // eventListeners for the various mouse events
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      // update beginning and end points of the stroke
+      [lastX, lastY] = [e.offsetX, e.offsetY]
+    });
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('mouseout', () => isDrawing = false);
+
+  </script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+    }
+  </style>
+
+</body>
+
+</html>
